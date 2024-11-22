@@ -8,11 +8,12 @@ const CELL_SIZE = canvas.width / GRID_SIZE; // Calculate cell size based on canv
 
 // Predefined black block positions (row, column)
 const blackBlocks = [
-  [1, 1],
-  [2, 3],
-  [3, 5],
-  [5, 2],
-  [6, 6],
+    [5, 3], 
+    [5, 2], 
+    [6, 3], 
+    [6, 2], 
+    [7, 3], 
+    [7, 2],
 ];
 
 // Colors for the blocks
@@ -42,3 +43,5 @@ function drawGrid() {
 
 // Initialize the game board
 drawGrid();
+
+
