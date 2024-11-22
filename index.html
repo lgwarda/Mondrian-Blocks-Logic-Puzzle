@@ -3,13 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mondrian Blocks 8x8</title>
+  <title>8x8 Mondrian Blocks</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!-- 
+Gameplay Instructions:
+  
+Drag and drop the colored blocks onto the grid to complete the puzzle! 
+  
+You have the following blocks available to use:
+- 24 red blocks
+- 12 yellow blocks
+- 9 blue blocks
+- 13 white blocks
+  
+Your goal is to strategically place these blocks to fill the grid without 
+overlapping, using each block type according to the puzzle’s requirements.
+  
+Refresh the browser to reset the board and start again
+-->
   <main class="game-container">
     <h1>Mondrian Blocks</h1>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <section id="block-tray" class="block-tray"></section>
     <p class="instructions">Drag and drop colored blocks to fill the grid!</p>
   </main>
   <script src="script.js"></script>
