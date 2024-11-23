@@ -16,14 +16,24 @@ const blackBlocks = [
 ];
 
 
-// Colors for the blocks took from https://www.color-hex.com/color-palette/25374
-const colors = ['#dd0100', '#fac901', '#225095', '#ffff'];
+// Constants for color
+const black = '#333333';
+const boardColor = '#808080';
+
+const blockLimits = {
+  '#dd0100': 24, // Red
+  '#fac901': 12, // Yellow
+  '#225095': 9,  // Blue
+  '#ffff': 13,   // White
+};
+
 let draggedBlock = null;
 
 // Grid State (tracks filled cells)
 const grid = Array(GRID_SIZE)
   .fill(null)
   .map(() => Array(GRID_SIZE).fill(null)); // Initially, all cells are empty
+  
 
 // Draw the grid
 function drawGrid() {
@@ -34,12 +44,12 @@ function drawGrid() {
 
       // Check if the current cell is a black block
       if (blackBlocks.some(([r, c]) => r === row && c === col)) {
-        ctx.fillStyle = '#333';
+        ctx.fillStyle = black;
       } else if (grid[row][col]) {
         // Draw placed blocks
         ctx.fillStyle = grid[row][col];
       } else {
-        ctx.fillStyle = 'gray';
+        ctx.fillStyle = boardColor;
       }
 
       // Draw the cell
@@ -55,33 +65,29 @@ function drawBlocks() {
   const tray = document.getElementById('block-tray');
   tray.innerHTML = ''; // Clear previous blocks
 
-  colors.forEach((color, index) => {
-    const block = document.createElement('div');
-    block.className = 'block draggable';
-    block.draggable = true;
-    block.style.backgroundColor = color;
-    block.style.width = `${CELL_SIZE}px`;
-    block.style.height = `${CELL_SIZE}px`;
-    block.dataset.color = color;
+  Object.entries(blockLimits).forEach(([color, count]) => {
+    if (count > 0) { // Only draw blocks if there are remaining ones
+      const block = document.createElement('div');
+      block.className = 'block draggable';
+      block.draggable = true;
+      block.style.backgroundColor = color;
+      block.style.width = `${CELL_SIZE}px`;
+      block.style.height = `${CELL_SIZE}px`;
+      block.dataset.color = color;
 
-    // Add drag events
-    block.addEventListener('dragstart', (e) => {
-      draggedBlock = color; // Store the dragged block's color
-    });
+      // Add drag events
+      block.addEventListener('dragstart', (e) => {
+        draggedBlock = color; // Store the dragged block's color
+      });
 
-    tray.appendChild(block);
+      tray.appendChild(block);
+    }
   });
 }
-
-// Handle dropping on the canvas
-canvas.addEventListener('dragover', (e) => {
-  e.preventDefault(); // Allow dropping
-});
 
 canvas.addEventListener('drop', (e) => {
   e.preventDefault();
 
-  // Get the drop position
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
@@ -89,7 +95,6 @@ canvas.addEventListener('drop', (e) => {
   const row = Math.floor(y / CELL_SIZE);
   const col = Math.floor(x / CELL_SIZE);
 
-  // Ensure the cell is valid and not occupied
   if (
     row >= 0 &&
     col >= 0 &&
@@ -98,10 +103,19 @@ canvas.addEventListener('drop', (e) => {
     !blackBlocks.some(([r, c]) => r === row && c === col) && // Not a black block
     !grid[row][col] // Not already filled
   ) {
-    grid[row][col] = draggedBlock; // Place the block
-    draggedBlock = null; // Reset the dragged block
-    drawGrid(); // Redraw the grid with the new block
+    if (blockLimits[draggedBlock] > 0) {
+      grid[row][col] = draggedBlock; // Place the block
+      blockLimits[draggedBlock] -= 1; // Decrement the limit
+      drawBlocks(); // Redraw the tray to reflect remaining blocks
+      draggedBlock = null; // Reset the dragged block
+      drawGrid(); // Redraw the grid
+    }
   }
+});
+
+// Handle dropping on the canvas
+canvas.addEventListener('dragover', (e) => {
+  e.preventDefault(); // Allow dropping
 });
 
 // Initialize the game
@@ -111,3 +125,4 @@ function init() {
 }
 
 init();
+
